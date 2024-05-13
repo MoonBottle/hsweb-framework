@@ -1,6 +1,8 @@
 package org.hswebframework.web.crud.events;
 
 import org.hswebframework.web.crud.entity.EventTestEntity;
+import org.hswebframework.web.crud.entity.TestEntity;
+import org.hswebframework.web.crud.utils.EntityEventUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -103,6 +105,19 @@ public class TestEntityListener {
             }
         }));
     }
+
+    @EventListener
+    public void handlePrepareModifyEvent(EntityPrepareModifyEvent<EventTestEntity> event) {
+        event.async(
+            EntityEventUtils.onPrepareModifyEven(event,
+                (before, after) -> {
+                    before.setTestColumn(-2L);
+                    after.setTestColumn(-3L);
+                }
+            )
+        );
+    }
+
     @EventListener
     public void handleModify(EntityModifyEvent<EventTestEntity> event) {
         event.async(Mono.fromRunnable(() -> {

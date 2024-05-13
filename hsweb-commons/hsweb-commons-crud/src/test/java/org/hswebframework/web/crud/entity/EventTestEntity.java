@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Table(name = "s_test_event")
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor
 @NoArgsConstructor
 @EnableEntityEvent
 public class EventTestEntity extends GenericEntity<String> {
@@ -26,9 +26,19 @@ public class EventTestEntity extends GenericEntity<String> {
     @Column
     private Integer age;
 
+    @Column
+    private Long testColumn;
+
     @Override
     @GeneratedValue(generator = Generators.DEFAULT_ID_GENERATOR)
     public String getId() {
         return super.getId();
+    }
+
+    public static EventTestEntity of(String name, Integer age) {
+        EventTestEntity eventTestEntity = new EventTestEntity();
+        eventTestEntity.setName(name);
+        eventTestEntity.setAge(age);
+        return eventTestEntity;
     }
 }

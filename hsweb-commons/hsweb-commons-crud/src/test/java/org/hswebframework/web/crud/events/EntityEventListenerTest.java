@@ -92,9 +92,10 @@ public class EntityEventListenerTest {
             .verifyComplete();
         Assert.assertEquals(listener.created.getAndSet(0), 1);
 
+        entity.setTestColumn(-1L);
         reactiveRepository
             .createUpdate()
-            .set(EventTestEntity::getAge, NativeSql.of("coalesce(age+1,?)", 10))
+            .set(entity)
             .where()
             .is(entity::getName)
             .execute()
