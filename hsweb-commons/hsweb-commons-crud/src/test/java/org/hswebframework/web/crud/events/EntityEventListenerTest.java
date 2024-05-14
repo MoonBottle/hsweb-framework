@@ -97,6 +97,7 @@ public class EntityEventListenerTest {
         reactiveRepository
             .createUpdate()
             .set(entity)
+            .setNull(EventTestEntity::getTestColumn2)
             .where()
             .is(entity::getName)
             .execute()

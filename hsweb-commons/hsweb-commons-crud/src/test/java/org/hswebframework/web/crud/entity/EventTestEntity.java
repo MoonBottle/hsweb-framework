@@ -29,6 +29,9 @@ public class EventTestEntity extends GenericEntity<String> {
     @Column
     private Long testColumn;
 
+    @Column
+    private Integer testColumn2;
+
     @Override
     @GeneratedValue(generator = Generators.DEFAULT_ID_GENERATOR)
     public String getId() {
