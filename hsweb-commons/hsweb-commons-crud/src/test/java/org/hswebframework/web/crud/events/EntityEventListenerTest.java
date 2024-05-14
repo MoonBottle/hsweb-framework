@@ -56,6 +56,35 @@ public class EntityEventListenerTest {
     }
 
     @Test
+    public void testPrepareModifySetNull() {
+        EventTestEntity entity = EventTestEntity.of("prepare-setNull", 20);
+        reactiveRepository
+            .insert(entity)
+            .as(StepVerifier::create)
+            .expectNext(1)
+            .verifyComplete();
+        Assert.assertEquals(listener.created.getAndSet(0), 1);
+
+        reactiveRepository
+            .createUpdate()
+            .set("name", "prepare-setNull-set")
+            .setNull("age")
+            .where("id", entity.getId())
+            .execute()
+            .as(StepVerifier::create)
+            .expectNextCount(1)
+            .verifyComplete();
+
+        reactiveRepository
+            .findById(entity.getId())
+            .mapNotNull(EventTestEntity::getAge)
+            .as(StepVerifier::create)
+            .expectComplete()
+            .verify();
+
+    }
+
+    @Test
     public void testPrepareModify() {
         EventTestEntity entity = EventTestEntity.of("prepare", 10);
         reactiveRepository
