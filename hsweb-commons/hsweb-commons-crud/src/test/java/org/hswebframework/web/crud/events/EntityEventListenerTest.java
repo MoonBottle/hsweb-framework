@@ -92,6 +92,7 @@ public class EntityEventListenerTest {
             .verifyComplete();
         Assert.assertEquals(listener.created.getAndSet(0), 1);
 
+        // 这里如果不赋值的话，最终的 sql 会没有这个字段
         entity.setTestColumn(-1L);
         reactiveRepository
             .createUpdate()
