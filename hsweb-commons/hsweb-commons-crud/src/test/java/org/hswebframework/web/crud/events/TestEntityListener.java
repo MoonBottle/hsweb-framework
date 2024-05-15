@@ -112,8 +112,8 @@ public class TestEntityListener {
         event.async(
             EntityEventUtils.onPrepareModifyEven(event,
                 (before, after) -> {
-                    before.setTestColumn(-2L);
-                    after.setTestColumn(-3L);
+                    // before.setTestColumn(-2L);
+                    // after.setTestColumn(-3L);
                 }
             )
         );
