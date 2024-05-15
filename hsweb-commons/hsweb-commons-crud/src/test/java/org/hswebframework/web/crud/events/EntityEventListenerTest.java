@@ -39,9 +39,10 @@ public class EntityEventListenerTest {
     private TestEntityListener listener;
 
     @Before
-    public void before(){
+    public void before() {
         listener.reset();
     }
+
     @Test
     public void test() {
         Mono.just(EventTestEntity.of("test", 1))
@@ -66,9 +67,9 @@ public class EntityEventListenerTest {
 
         reactiveRepository
             .createUpdate()
-            .set("name","prepare-xx")
-            .set("age",20)
-            .where("id",entity.getId())
+            .set("name", "prepare-xx")
+            .set("age", 20)
+            .where("id", entity.getId())
             .execute()
             .as(StepVerifier::create)
             .expectNextCount(1)
@@ -81,6 +82,34 @@ public class EntityEventListenerTest {
             .expectNext("prepare-0")
             .verifyComplete();
 
+    }
+
+    @Test
+    public void testPrepareModifySetNull() {
+        EventTestEntity entity = EventTestEntity.of("prepare-setNull", 20);
+        reactiveRepository
+            .insert(entity)
+            .as(StepVerifier::create)
+            .expectNext(1)
+            .verifyComplete();
+        Assert.assertEquals(listener.created.getAndSet(0), 1);
+
+        reactiveRepository
+            .createUpdate()
+            .set("name", "prepare-setNull-set")
+            .setNull("age")
+            .where("id", entity.getId())
+            .execute()
+            .as(StepVerifier::create)
+            .expectNextCount(1)
+            .verifyComplete();
+
+        reactiveRepository
+            .findById(entity.getId())
+            .mapNotNull(EventTestEntity::getAge)
+            .as(StepVerifier::create)
+            .expectComplete()
+            .verify();
     }
 
     @Test
@@ -110,12 +139,12 @@ public class EntityEventListenerTest {
     @Test
     public void testInsertBatch() {
         reactiveRepository.createQuery()
-                          .where(EventTestEntity::getId, "test")
-                          .fetch()
-                          .then()
-                          .as(StepVerifier::create)
-                          .expectComplete()
-                          .verify();
+            .where(EventTestEntity::getId, "test")
+            .fetch()
+            .then()
+            .as(StepVerifier::create)
+            .expectComplete()
+            .verify();
         Assert.assertEquals(listener.beforeQuery.getAndSet(0), 1);
 
 
@@ -137,18 +166,18 @@ public class EntityEventListenerTest {
         Assert.assertEquals(listener.beforeModify.getAndSet(0), 2);
 
         reactiveRepository.createDelete().where().in("name", "test2", "test3").execute()
-                          .as(StepVerifier::create)
-                          .expectNext(2)
-                          .verifyComplete();
+            .as(StepVerifier::create)
+            .expectNext(2)
+            .verifyComplete();
 
         Assert.assertEquals(listener.deleted.getAndSet(0), 2);
         Assert.assertEquals(listener.beforeDelete.getAndSet(0), 2);
 
         reactiveRepository.save(EventTestEntity.of("test2", 1))
-                          .then()
-                          .as(StepVerifier::create)
-                          .expectComplete()
-                          .verify();
+            .then()
+            .as(StepVerifier::create)
+            .expectComplete()
+            .verify();
 
         Assert.assertEquals(listener.saved.getAndSet(0), 1);
         Assert.assertEquals(listener.beforeSave.getAndSet(0), 1);
